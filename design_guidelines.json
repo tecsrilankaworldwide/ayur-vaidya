@@ -1,0 +1,71 @@
+{
+  "project_name": "Ayurvedic Medicine Recommender",
+  "theme": "light",
+  "archetype": "1 (Organic & Earthy)",
+  "design_philosophy": "Grounded, natural, and trustworthy. We avoid sterile hospital blues and opt for warm sand, moss green, and terracotta. The UI uses generously spaced flat solid surfaces rather than glassmorphism to convey clarity and clinical reliability while remaining warm.",
+  "typography": {
+    "primary_heading_font": "Cormorant Garamond",
+    "secondary_body_font": "Outfit",
+    "rules": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none font-serif text-[#1A2421]",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-none font-serif text-[#1A2421]",
+      "h3": "text-xl sm:text-2xl tracking-tight font-serif text-[#1A2421]",
+      "body": "text-base leading-relaxed font-sans text-[#5C6B64]",
+      "labels_and_overlines": "text-xs sm:text-sm uppercase tracking-[0.2em] font-sans font-semibold text-[#4A5D23]"
+    }
+  },
+  "colors": {
+    "background": "#F9F6F0",
+    "surface": "#FFFFFF",
+    "surface_alt": "#F0EBE1",
+    "primary": "#2C4C3B",
+    "primary_hover": "#3A634D",
+    "accent": "#E07A5F",
+    "text_primary": "#1A2421",
+    "text_secondary": "#5C6B64",
+    "border": "#E5E0D8"
+  },
+  "layout_and_spacing": {
+    "general": "Mobile-first, generous padding (p-6 to p-12). Containers with borders must have internal padding.",
+    "dashboard_grid": "Bento Grid Mode B (Control Room) but with relaxed gap-6 to gap-8. Mix tall lists with wide summary cards.",
+    "medicine_detail": "Editorial layout. Hero image max-h-[50vh] object-cover. Content container slightly overlaps the image with -mt-12 or -mt-20, using a solid white background and rounded-t-3xl.",
+    "border_radius": "rounded-2xl for cards, rounded-full for buttons and badges."
+  },
+  "surfaces": {
+    "cards": "bg-white border border-[#E5E0D8] shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl",
+    "header": "bg-[#F9F6F0] border-b border-[#E5E0D8] sticky top-0 z-50",
+    "inputs": "bg-[#F9F6F0] border border-[#E5E0D8] rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#2C4C3B] focus:border-transparent transition-all"
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Stroke width 1.5, slightly larger size (w-5 h-5 or w-6 h-6) to match the elegant serif typography."
+  },
+  "media_assets": {
+    "login_background": {
+      "url": "https://images.pexels.com/photos/13952221/pexels-photo-13952221.jpeg",
+      "description": "Peaceful lakeside scene with calm waters and lush green forest. Use with a warm white overlay (bg-[#F9F6F0]/80) for the login page."
+    },
+    "dashboard_welcome": {
+      "url": "https://images.pexels.com/photos/7615621/pexels-photo-7615621.jpeg",
+      "description": "Flat lay of herbal supplements. Use in the top welcome banner of the dashboard."
+    },
+    "category_placeholder": {
+      "url": "https://images.unsplash.com/photo-1768700439764-9ec0ba31ae75",
+      "description": "Mortar and pestle with bowls of ingredients. Fallback image for illness categories or general herbal visuals."
+    },
+    "symptom_checker": {
+      "url": "https://images.pexels.com/photos/6978215/pexels-photo-6978215.jpeg",
+      "description": "Herbal tea ingredients and rustic utensils. Use alongside the symptom checker interface to ground it in natural healing."
+    }
+  },
+  "instructions_to_main_agent": [
+    "Initialize Tailwind config with the specified colors and fonts. Install 'Cormorant Garamond' and 'Outfit' via Google Fonts.",
+    "This is a JS (not TS) project. Write clean React components.",
+    "Implement Google OAuth login as the entry point. The login page should be a split layout or a centered floating card over the 'login_background' image.",
+    "Create a User Dashboard featuring: Welcome section, quick access to Symptom Checker, and a Browse by Illness grid.",
+    "For the Symptom Checker, use Shadcn UI multi-select or checkbox groups, but style them warmly (no tech-startup blue/gray).",
+    "The Medicine Detail page must be comprehensive (usage, dosage, ingredients, precautions). Use an editorial layout with the image at the top and content below.",
+    "Avoid glassmorphism. Health data requires clarity. Use flat, solid backgrounds (bg-white or bg-[#F9F6F0]) with delicate borders (#E5E0D8).",
+    "Ensure all interactive elements (buttons, inputs, links) have a 'data-testid' attribute (e.g., data-testid='login-button', data-testid='symptom-search')."
+  ]
+}
