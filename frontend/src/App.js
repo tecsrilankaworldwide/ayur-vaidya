@@ -11,6 +11,7 @@ import SymptomChecker from "@/pages/SymptomChecker";
 import CategoryPage from "@/pages/CategoryPage";
 import MedicineDetail from "@/pages/MedicineDetail";
 import SearchResults from "@/pages/SearchResults";
+import PractitionersPage from "@/pages/PractitionersPage";
 
 // Auth callback component
 const AuthCallback = () => {
@@ -142,6 +143,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <SearchResults />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/practitioners"
+        element={
+          <ProtectedRoute>
+            <PractitionersPage />
           </ProtectedRoute>
         }
       />

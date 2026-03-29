@@ -87,6 +87,28 @@ class SymptomCheckRequest(BaseModel):
     symptoms: List[str]
 
 
+class Practitioner(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    practitioner_id: str
+    name: str
+    title: str
+    specializations: List[str]
+    experience_years: int
+    qualifications: List[str]
+    clinic_name: str
+    address: str
+    city: str
+    state: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    consultation_fee: Optional[str] = None
+    available_days: List[str]
+    rating: float = 0.0
+    reviews_count: int = 0
+    image_url: Optional[str] = None
+    bio: Optional[str] = None
+
+
 # ==================== AUTH HELPERS ====================
 
 async def get_current_user(request: Request) -> User:
@@ -317,6 +339,64 @@ async def check_symptoms(request: SymptomCheckRequest):
         "matched_count": len(medicines_sorted),
         "message": f"Found {len(medicines_sorted)} remedies for your symptoms"
     }
+
+
+# ==================== PRACTITIONERS ====================
+
+@api_router.get("/practitioners", response_model=List[Practitioner])
+async def get_practitioners(
+    city: Optional[str] = None,
+    specialization: Optional[str] = None,
+    search: Optional[str] = None
+):
+    """Get practitioners with optional filters"""
+    query = {}
+    
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    
+    if specialization:
+        query["specializations"] = {"$regex": specialization, "$options": "i"}
+    
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"clinic_name": {"$regex": search, "$options": "i"}},
+            {"specializations": {"$regex": search, "$options": "i"}}
+        ]
+    
+    practitioners = await db.practitioners.find(query, {"_id": 0}).to_list(100)
+    return practitioners
+
+
+@api_router.get("/practitioners/cities")
+async def get_practitioner_cities():
+    """Get unique cities with practitioners"""
+    practitioners = await db.practitioners.find({}, {"city": 1, "_id": 0}).to_list(100)
+    cities = list(set(p.get("city") for p in practitioners if p.get("city")))
+    return sorted(cities)
+
+
+@api_router.get("/practitioners/specializations")
+async def get_practitioner_specializations():
+    """Get unique specializations"""
+    practitioners = await db.practitioners.find({}, {"specializations": 1, "_id": 0}).to_list(100)
+    specs = set()
+    for p in practitioners:
+        specs.update(p.get("specializations", []))
+    return sorted(list(specs))
+
+
+@api_router.get("/practitioners/{practitioner_id}")
+async def get_practitioner(practitioner_id: str):
+    """Get a specific practitioner"""
+    practitioner = await db.practitioners.find_one(
+        {"practitioner_id": practitioner_id},
+        {"_id": 0}
+    )
+    if not practitioner:
+        raise HTTPException(status_code=404, detail="Practitioner not found")
+    return practitioner
 
 
 # ==================== SEED DATABASE ====================
@@ -707,15 +787,182 @@ async def seed_database():
     # Clear existing data
     await db.illness_categories.delete_many({})
     await db.medicines.delete_many({})
+    await db.practitioners.delete_many({})
+    
+    # Practitioners data
+    practitioners = [
+        {
+            "practitioner_id": "dr-sharma-delhi",
+            "name": "Dr. Rajesh Sharma",
+            "title": "BAMS, MD (Ayurveda)",
+            "specializations": ["Panchakarma", "Chronic Diseases", "Skin Disorders"],
+            "experience_years": 25,
+            "qualifications": ["BAMS - Gujarat Ayurved University", "MD Kayachikitsa - BHU"],
+            "clinic_name": "Vedic Ayurveda Clinic",
+            "address": "45, Hauz Khas Village, Near Deer Park",
+            "city": "New Delhi",
+            "state": "Delhi",
+            "phone": "+91 98765 43210",
+            "email": "dr.sharma@vedicayurveda.com",
+            "consultation_fee": "₹800",
+            "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "rating": 4.8,
+            "reviews_count": 342,
+            "image_url": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d",
+            "bio": "Dr. Sharma is a renowned Ayurvedic physician with over 25 years of experience in treating chronic diseases through traditional Panchakarma therapies."
+        },
+        {
+            "practitioner_id": "dr-patel-mumbai",
+            "name": "Dr. Meera Patel",
+            "title": "BAMS, MS (Shalya Tantra)",
+            "specializations": ["Women's Health", "Fertility", "Digestive Disorders"],
+            "experience_years": 18,
+            "qualifications": ["BAMS - Maharashtra University", "MS Shalya - Pune University"],
+            "clinic_name": "Ayur Shakti Wellness Center",
+            "address": "12, Linking Road, Bandra West",
+            "city": "Mumbai",
+            "state": "Maharashtra",
+            "phone": "+91 98123 45678",
+            "email": "dr.meera@ayurshakti.in",
+            "consultation_fee": "₹1000",
+            "available_days": ["Monday", "Wednesday", "Friday", "Saturday"],
+            "rating": 4.9,
+            "reviews_count": 287,
+            "image_url": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2",
+            "bio": "Dr. Patel specializes in women's health and fertility treatments using authentic Ayurvedic protocols combined with modern diagnostic techniques."
+        },
+        {
+            "practitioner_id": "dr-krishnan-bangalore",
+            "name": "Dr. Venkat Krishnan",
+            "title": "BAMS, PhD (Dravyaguna)",
+            "specializations": ["Respiratory Disorders", "Allergies", "Immunity"],
+            "experience_years": 22,
+            "qualifications": ["BAMS - RGUHS Bangalore", "PhD - SDM College of Ayurveda"],
+            "clinic_name": "Prakriti Ayurveda Hospital",
+            "address": "78, JP Nagar 6th Phase",
+            "city": "Bangalore",
+            "state": "Karnataka",
+            "phone": "+91 80 2658 9900",
+            "email": "info@prakritiayurveda.org",
+            "consultation_fee": "₹750",
+            "available_days": ["Monday", "Tuesday", "Thursday", "Friday", "Saturday"],
+            "rating": 4.7,
+            "reviews_count": 198,
+            "image_url": "https://images.unsplash.com/photo-1537368910025-700350fe46c7",
+            "bio": "With a PhD in Dravyaguna (Ayurvedic Pharmacology), Dr. Krishnan brings scientific rigor to traditional treatments for respiratory and immune disorders."
+        },
+        {
+            "practitioner_id": "dr-nair-kerala",
+            "name": "Dr. Lakshmi Nair",
+            "title": "BAMS, MD (Panchakarma)",
+            "specializations": ["Panchakarma", "Rejuvenation", "Stress Management"],
+            "experience_years": 30,
+            "qualifications": ["BAMS - Kerala University", "MD - Govt. Ayurveda College, Trivandrum"],
+            "clinic_name": "Kerala Ayurveda Traditions",
+            "address": "Near Padmanabhaswamy Temple, East Fort",
+            "city": "Thiruvananthapuram",
+            "state": "Kerala",
+            "phone": "+91 471 233 4455",
+            "email": "appointments@keralaayurvedatraditions.com",
+            "consultation_fee": "₹600",
+            "available_days": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "rating": 4.9,
+            "reviews_count": 456,
+            "image_url": "https://images.unsplash.com/photo-1594824476967-48c8b964273f",
+            "bio": "Dr. Nair is a third-generation Ayurvedic physician from Kerala, specializing in authentic Panchakarma and rejuvenation therapies."
+        },
+        {
+            "practitioner_id": "dr-gupta-jaipur",
+            "name": "Dr. Anil Gupta",
+            "title": "BAMS, MD (Rasashastra)",
+            "specializations": ["Joint Disorders", "Arthritis", "Pain Management"],
+            "experience_years": 20,
+            "qualifications": ["BAMS - NIA Jaipur", "MD Rasashastra - NIA Jaipur"],
+            "clinic_name": "Jaipur Ayurveda Sansthan",
+            "address": "C-Scheme, Near Statue Circle",
+            "city": "Jaipur",
+            "state": "Rajasthan",
+            "phone": "+91 141 256 7890",
+            "email": "drgupta@jaipurayurveda.com",
+            "consultation_fee": "₹700",
+            "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Saturday"],
+            "rating": 4.6,
+            "reviews_count": 167,
+            "image_url": "https://images.unsplash.com/photo-1622253692010-333f2da6031d",
+            "bio": "Dr. Gupta specializes in treating joint disorders and chronic pain using traditional mineral-based Ayurvedic preparations (Rasaushadhis)."
+        },
+        {
+            "practitioner_id": "dr-devi-hyderabad",
+            "name": "Dr. Sunita Devi",
+            "title": "BAMS, MD (Kaumarbhritya)",
+            "specializations": ["Pediatrics", "Child Development", "Digestive Issues in Children"],
+            "experience_years": 15,
+            "qualifications": ["BAMS - NTRUHS", "MD Kaumarbhritya - Dr. NTR University"],
+            "clinic_name": "Bala Ayurveda Clinic",
+            "address": "Jubilee Hills, Road No. 36",
+            "city": "Hyderabad",
+            "state": "Telangana",
+            "phone": "+91 40 2355 6677",
+            "email": "balaayurveda@gmail.com",
+            "consultation_fee": "₹500",
+            "available_days": ["Monday", "Tuesday", "Wednesday", "Friday", "Saturday"],
+            "rating": 4.8,
+            "reviews_count": 234,
+            "image_url": "https://images.unsplash.com/photo-1651008376811-b90baee60c1f",
+            "bio": "Dr. Devi is a pediatric Ayurveda specialist, dedicated to providing gentle, natural treatments for children's health issues."
+        },
+        {
+            "practitioner_id": "dr-singh-varanasi",
+            "name": "Dr. Pradeep Singh",
+            "title": "BAMS, MD (Swasthavritta)",
+            "specializations": ["Lifestyle Disorders", "Diabetes Management", "Preventive Care"],
+            "experience_years": 28,
+            "qualifications": ["BAMS - BHU", "MD Swasthavritta - BHU"],
+            "clinic_name": "Kashi Ayurveda Kendra",
+            "address": "Assi Ghat, Near Tulsi Manas Temple",
+            "city": "Varanasi",
+            "state": "Uttar Pradesh",
+            "phone": "+91 542 245 6789",
+            "email": "kashiayurveda@bhu.ac.in",
+            "consultation_fee": "₹400",
+            "available_days": ["Monday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "rating": 4.7,
+            "reviews_count": 312,
+            "image_url": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d",
+            "bio": "Teaching at BHU and practicing in the spiritual city of Varanasi, Dr. Singh combines ancient wisdom with lifestyle medicine for modern health challenges."
+        },
+        {
+            "practitioner_id": "dr-rao-chennai",
+            "name": "Dr. Kamala Rao",
+            "title": "BAMS, MD (Manasroga)",
+            "specializations": ["Mental Health", "Anxiety", "Sleep Disorders", "Stress"],
+            "experience_years": 17,
+            "qualifications": ["BAMS - Tamil Nadu MGR University", "MD Manasroga - AVS Coimbatore"],
+            "clinic_name": "Manas Ayurveda Center",
+            "address": "T. Nagar, Near Pondy Bazaar",
+            "city": "Chennai",
+            "state": "Tamil Nadu",
+            "phone": "+91 44 2434 5566",
+            "email": "dr.rao@manasayurveda.in",
+            "consultation_fee": "₹900",
+            "available_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "rating": 4.8,
+            "reviews_count": 189,
+            "image_url": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2",
+            "bio": "Dr. Rao specializes in Ayurvedic psychiatry (Manasroga), offering holistic treatments for anxiety, depression, and sleep disorders."
+        }
+    ]
     
     # Insert new data
     await db.illness_categories.insert_many(categories)
     await db.medicines.insert_many(medicines)
+    await db.practitioners.insert_many(practitioners)
     
     return {
         "message": "Database seeded successfully",
         "categories_count": len(categories),
-        "medicines_count": len(medicines)
+        "medicines_count": len(medicines),
+        "practitioners_count": len(practitioners)
     }
 
 

@@ -9,7 +9,8 @@ import {
   Stethoscope, 
   ArrowRight, 
   Leaf,
-  RefreshCw
+  RefreshCw,
+  UserCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -88,7 +89,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
           {/* Symptom Checker Card */}
           <Link 
             to="/symptom-checker"
@@ -144,6 +145,28 @@ const Dashboard = () => {
               Explore our collection of {categories.length > 0 ? categories.length : "7"} illness categories and natural remedies
             </p>
           </div>
+
+          {/* Find Practitioners Card */}
+          <Link 
+            to="/practitioners"
+            className="group block animate-fadeIn delay-300"
+            data-testid="practitioners-link"
+          >
+            <div className="bg-surface rounded-2xl border border-border p-6 h-full transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary/30">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                  <UserCircle className="w-7 h-7 text-primary" />
+                </div>
+                <ArrowRight className="w-5 h-5 text-text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              </div>
+              <h2 className="font-serif text-2xl font-semibold text-text-primary mb-2">
+                Find Practitioners
+              </h2>
+              <p className="text-text-secondary font-sans text-sm">
+                Connect with experienced Ayurvedic doctors near you for consultations
+              </p>
+            </div>
+          </Link>
         </div>
 
         {/* Categories Grid */}

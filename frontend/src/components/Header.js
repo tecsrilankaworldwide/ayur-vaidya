@@ -97,6 +97,13 @@ export const Header = () => {
             >
               Symptom Checker
             </Link>
+            <Link 
+              to="/practitioners" 
+              className="text-text-secondary hover:text-primary font-sans text-sm font-medium transition-colors"
+              data-testid="nav-practitioners"
+            >
+              Find Practitioners
+            </Link>
             
             {/* User Menu */}
             <DropdownMenu>
@@ -179,6 +186,13 @@ export const Header = () => {
                 className="block px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-alt hover:text-primary font-sans text-sm font-medium transition-colors"
               >
                 Symptom Checker
+              </Link>
+              <Link 
+                to="/practitioners" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-alt hover:text-primary font-sans text-sm font-medium transition-colors"
+              >
+                Find Practitioners
               </Link>
               <div className="border-t border-border pt-2 mt-2">
                 <div className="flex items-center gap-3 px-3 py-2">

@@ -53,3 +53,24 @@ export const healthCheck = async () => {
   const response = await apiClient.get("/health");
   return response.data;
 };
+
+// Practitioners
+export const getPractitioners = async (params = {}) => {
+  const response = await apiClient.get("/practitioners", { params });
+  return response.data;
+};
+
+export const getPractitionerById = async (practitionerId) => {
+  const response = await apiClient.get(`/practitioners/${practitionerId}`);
+  return response.data;
+};
+
+export const getPractitionerCities = async () => {
+  const response = await apiClient.get("/practitioners/cities");
+  return response.data;
+};
+
+export const getPractitionerSpecializations = async () => {
+  const response = await apiClient.get("/practitioners/specializations");
+  return response.data;
+};

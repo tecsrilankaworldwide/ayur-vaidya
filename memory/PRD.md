@@ -32,6 +32,8 @@
 - Search functionality
 - Medicine detail API
 - Category-based browsing
+- **Practitioner Directory API** - 8 practitioners across 8 cities
+- Practitioner search/filter by city and specialization
 - Health check endpoint
 
 ### Frontend Features
@@ -41,6 +43,8 @@
 - Category pages with medicine listings
 - Medicine detail pages with full information
 - Search functionality
+- **Practitioner Directory** with search, city/specialization filters
+- **Practitioner detail modal** with contact info (call/email)
 - Protected routes with authentication
 - Responsive design with earthy, organic theme (Cormorant Garamond + Outfit fonts)
 
@@ -63,7 +67,8 @@
 - [ ] User favorites/bookmarks
 - [ ] Recently viewed medicines
 - [ ] Print medicine information
-- [ ] Offline support for medicine data
+- [ ] Practitioner booking integration
+- [ ] Practitioner reviews system
 
 ### P2 (Medium Priority)
 - [ ] User notes on medicines
