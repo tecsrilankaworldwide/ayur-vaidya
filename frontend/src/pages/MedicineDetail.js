@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
-import { getMedicineById } from "@/services/api";
+import { getMedicineById, addFavorite, removeFavorite, checkFavorite } from "@/services/api";
 import { toast } from "sonner";
 import { 
   ChevronLeft,
@@ -11,7 +11,8 @@ import {
   AlertTriangle,
   ShieldX,
   BookOpen,
-  AlertCircle
+  AlertCircle,
+  Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +22,12 @@ const MedicineDetail = () => {
   const { medicineId } = useParams();
   const [medicine, setMedicine] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
     loadMedicine();
+    checkIfFavorited();
   }, [medicineId]);
 
   const loadMedicine = async () => {
@@ -36,6 +40,33 @@ const MedicineDetail = () => {
       toast.error("Failed to load medicine details");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkIfFavorited = async () => {
+    try {
+      const data = await checkFavorite("medicine", medicineId);
+      setIsFavorited(data.is_favorited);
+    } catch (error) {
+      console.error("Failed to check favorite:", error);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    try {
+      setFavoriteLoading(true);
+      if (isFavorited) {
+        await removeFavorite("medicine", medicineId);
+        toast.success("Removed from favorites");
+      } else {
+        await addFavorite("medicine", medicineId);
+        toast.success("Added to favorites");
+      }
+      setIsFavorited(!isFavorited);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to update favorites");
+    } finally {
+      setFavoriteLoading(false);
     }
   };
 
@@ -89,7 +120,7 @@ const MedicineDetail = () => {
         <div className="medicine-hero-overlay" />
         
         {/* Back Button */}
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
           <Link 
             to="/dashboard"
             className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-full text-sm font-sans font-medium hover:bg-white/30 transition-colors"
@@ -98,6 +129,16 @@ const MedicineDetail = () => {
             <ChevronLeft className="w-4 h-4" />
             Back
           </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+            className={`bg-white/20 backdrop-blur-sm hover:bg-white/30 ${isFavorited ? "text-accent" : "text-white"}`}
+            data-testid="favorite-medicine-button"
+          >
+            <Heart className={`w-5 h-5 ${isFavorited ? "fill-current" : ""}`} />
+          </Button>
         </div>
 
         {/* Hero Content */}

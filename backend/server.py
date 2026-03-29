@@ -109,6 +109,61 @@ class Practitioner(BaseModel):
     bio: Optional[str] = None
 
 
+# Booking Model
+class BookingCreate(BaseModel):
+    practitioner_id: str
+    date: str  # YYYY-MM-DD format
+    time_slot: str  # e.g., "10:00 AM"
+    reason: Optional[str] = None
+
+
+class Booking(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    booking_id: str
+    user_id: str
+    practitioner_id: str
+    practitioner_name: str
+    date: str
+    time_slot: str
+    reason: Optional[str] = None
+    status: str = "confirmed"  # confirmed, cancelled, completed
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Review Model
+class ReviewCreate(BaseModel):
+    practitioner_id: str
+    rating: int  # 1-5
+    comment: str
+
+
+class Review(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    review_id: str
+    user_id: str
+    user_name: str
+    user_picture: Optional[str] = None
+    practitioner_id: str
+    rating: int
+    comment: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Favorites Model
+class FavoriteCreate(BaseModel):
+    item_type: str  # "medicine" or "practitioner"
+    item_id: str
+
+
+class Favorite(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    favorite_id: str
+    user_id: str
+    item_type: str
+    item_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 # ==================== AUTH HELPERS ====================
 
 async def get_current_user(request: Request) -> User:
@@ -397,6 +452,250 @@ async def get_practitioner(practitioner_id: str):
     if not practitioner:
         raise HTTPException(status_code=404, detail="Practitioner not found")
     return practitioner
+
+
+# ==================== BOOKINGS ====================
+
+@api_router.post("/bookings", status_code=201)
+async def create_booking(booking: BookingCreate, user: User = Depends(get_current_user)):
+    """Create a new booking"""
+    # Verify practitioner exists
+    practitioner = await db.practitioners.find_one(
+        {"practitioner_id": booking.practitioner_id},
+        {"_id": 0}
+    )
+    if not practitioner:
+        raise HTTPException(status_code=404, detail="Practitioner not found")
+    
+    # Check if slot is already booked
+    existing = await db.bookings.find_one({
+        "practitioner_id": booking.practitioner_id,
+        "date": booking.date,
+        "time_slot": booking.time_slot,
+        "status": {"$ne": "cancelled"}
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="This time slot is already booked")
+    
+    booking_id = f"booking_{uuid.uuid4().hex[:12]}"
+    booking_doc = {
+        "booking_id": booking_id,
+        "user_id": user.user_id,
+        "practitioner_id": booking.practitioner_id,
+        "practitioner_name": practitioner["name"],
+        "date": booking.date,
+        "time_slot": booking.time_slot,
+        "reason": booking.reason,
+        "status": "confirmed",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.bookings.insert_one(booking_doc)
+    # Remove MongoDB's _id field for JSON serialization
+    booking_doc.pop("_id", None)
+    return {"message": "Booking confirmed", "booking": booking_doc}
+
+
+@api_router.get("/bookings")
+async def get_user_bookings(user: User = Depends(get_current_user)):
+    """Get user's bookings"""
+    bookings = await db.bookings.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("date", -1).to_list(100)
+    return bookings
+
+
+@api_router.delete("/bookings/{booking_id}")
+async def cancel_booking(booking_id: str, user: User = Depends(get_current_user)):
+    """Cancel a booking"""
+    result = await db.bookings.update_one(
+        {"booking_id": booking_id, "user_id": user.user_id},
+        {"$set": {"status": "cancelled"}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    return {"message": "Booking cancelled"}
+
+
+@api_router.get("/practitioners/{practitioner_id}/slots")
+async def get_available_slots(practitioner_id: str, date: str):
+    """Get available time slots for a practitioner on a specific date"""
+    practitioner = await db.practitioners.find_one(
+        {"practitioner_id": practitioner_id},
+        {"_id": 0}
+    )
+    if not practitioner:
+        raise HTTPException(status_code=404, detail="Practitioner not found")
+    
+    # Define all possible slots
+    all_slots = [
+        "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+        "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM",
+        "05:00 PM", "05:30 PM"
+    ]
+    
+    # Get booked slots for this date
+    booked = await db.bookings.find(
+        {"practitioner_id": practitioner_id, "date": date, "status": {"$ne": "cancelled"}},
+        {"time_slot": 1, "_id": 0}
+    ).to_list(100)
+    booked_slots = [b["time_slot"] for b in booked]
+    
+    # Return available slots
+    available_slots = [slot for slot in all_slots if slot not in booked_slots]
+    return {"date": date, "available_slots": available_slots, "booked_slots": booked_slots}
+
+
+# ==================== REVIEWS ====================
+
+@api_router.post("/reviews")
+async def create_review(review: ReviewCreate, user: User = Depends(get_current_user)):
+    """Create a review for a practitioner"""
+    # Verify practitioner exists
+    practitioner = await db.practitioners.find_one(
+        {"practitioner_id": review.practitioner_id},
+        {"_id": 0}
+    )
+    if not practitioner:
+        raise HTTPException(status_code=404, detail="Practitioner not found")
+    
+    # Check if user already reviewed this practitioner
+    existing = await db.reviews.find_one({
+        "user_id": user.user_id,
+        "practitioner_id": review.practitioner_id
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="You have already reviewed this practitioner")
+    
+    if review.rating < 1 or review.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    review_id = f"review_{uuid.uuid4().hex[:12]}"
+    review_doc = {
+        "review_id": review_id,
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "user_picture": user.picture,
+        "practitioner_id": review.practitioner_id,
+        "rating": review.rating,
+        "comment": review.comment,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.reviews.insert_one(review_doc)
+    
+    # Update practitioner's rating
+    all_reviews = await db.reviews.find(
+        {"practitioner_id": review.practitioner_id},
+        {"rating": 1, "_id": 0}
+    ).to_list(1000)
+    
+    avg_rating = sum(r["rating"] for r in all_reviews) / len(all_reviews)
+    await db.practitioners.update_one(
+        {"practitioner_id": review.practitioner_id},
+        {"$set": {"rating": round(avg_rating, 1), "reviews_count": len(all_reviews)}}
+    )
+    
+    # Remove MongoDB's _id field for JSON serialization
+    review_doc.pop("_id", None)
+    return {"message": "Review submitted", "review": review_doc}
+
+
+@api_router.get("/practitioners/{practitioner_id}/reviews")
+async def get_practitioner_reviews(practitioner_id: str):
+    """Get reviews for a practitioner"""
+    reviews = await db.reviews.find(
+        {"practitioner_id": practitioner_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return reviews
+
+
+# ==================== FAVORITES ====================
+
+@api_router.post("/favorites")
+async def add_favorite(favorite: FavoriteCreate, user: User = Depends(get_current_user)):
+    """Add an item to favorites"""
+    if favorite.item_type not in ["medicine", "practitioner"]:
+        raise HTTPException(status_code=400, detail="Invalid item type")
+    
+    # Check if already favorited
+    existing = await db.favorites.find_one({
+        "user_id": user.user_id,
+        "item_type": favorite.item_type,
+        "item_id": favorite.item_id
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Already in favorites")
+    
+    favorite_id = f"fav_{uuid.uuid4().hex[:12]}"
+    favorite_doc = {
+        "favorite_id": favorite_id,
+        "user_id": user.user_id,
+        "item_type": favorite.item_type,
+        "item_id": favorite.item_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.favorites.insert_one(favorite_doc)
+    # Remove MongoDB's _id field for JSON serialization
+    favorite_doc.pop("_id", None)
+    return {"message": "Added to favorites", "favorite": favorite_doc}
+
+
+@api_router.delete("/favorites/{item_type}/{item_id}")
+async def remove_favorite(item_type: str, item_id: str, user: User = Depends(get_current_user)):
+    """Remove an item from favorites"""
+    result = await db.favorites.delete_one({
+        "user_id": user.user_id,
+        "item_type": item_type,
+        "item_id": item_id
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Favorite not found")
+    return {"message": "Removed from favorites"}
+
+
+@api_router.get("/favorites")
+async def get_favorites(user: User = Depends(get_current_user)):
+    """Get user's favorites with item details"""
+    favorites = await db.favorites.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Enrich with item details
+    result = {"medicines": [], "practitioners": []}
+    
+    for fav in favorites:
+        if fav["item_type"] == "medicine":
+            medicine = await db.medicines.find_one(
+                {"medicine_id": fav["item_id"]},
+                {"_id": 0}
+            )
+            if medicine:
+                result["medicines"].append(medicine)
+        elif fav["item_type"] == "practitioner":
+            practitioner = await db.practitioners.find_one(
+                {"practitioner_id": fav["item_id"]},
+                {"_id": 0}
+            )
+            if practitioner:
+                result["practitioners"].append(practitioner)
+    
+    return result
+
+
+@api_router.get("/favorites/check/{item_type}/{item_id}")
+async def check_favorite(item_type: str, item_id: str, user: User = Depends(get_current_user)):
+    """Check if an item is favorited"""
+    favorite = await db.favorites.find_one({
+        "user_id": user.user_id,
+        "item_type": item_type,
+        "item_id": item_id
+    })
+    return {"is_favorited": favorite is not None}
 
 
 # ==================== SEED DATABASE ====================

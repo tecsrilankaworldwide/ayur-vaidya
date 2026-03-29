@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 // Pages
+import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import Dashboard from "@/pages/Dashboard";
 import SymptomChecker from "@/pages/SymptomChecker";
@@ -12,6 +13,8 @@ import CategoryPage from "@/pages/CategoryPage";
 import MedicineDetail from "@/pages/MedicineDetail";
 import SearchResults from "@/pages/SearchResults";
 import PractitionersPage from "@/pages/PractitionersPage";
+import MyBookings from "@/pages/MyBookings";
+import Favorites from "@/pages/Favorites";
 
 // Auth callback component
 const AuthCallback = () => {
@@ -105,7 +108,8 @@ const AppRouter = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route
         path="/dashboard"
         element={
@@ -151,6 +155,22 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <PractitionersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bookings"
+        element={
+          <ProtectedRoute>
+            <MyBookings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute>
+            <Favorites />
           </ProtectedRoute>
         }
       />

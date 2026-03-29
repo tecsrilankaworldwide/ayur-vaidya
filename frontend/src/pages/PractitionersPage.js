@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
-import { getPractitioners, getPractitionerCities, getPractitionerSpecializations } from "@/services/api";
+import { 
+  getPractitioners, 
+  getPractitionerCities, 
+  getPractitionerSpecializations,
+  getAvailableSlots,
+  createBooking,
+  getPractitionerReviews,
+  createReview,
+  addFavorite,
+  removeFavorite,
+  checkFavorite
+} from "@/services/api";
 import { toast } from "sonner";
 import { 
   Search,
@@ -14,7 +25,11 @@ import {
   Stethoscope,
   ChevronRight,
   Filter,
-  X
+  X,
+  Calendar,
+  Heart,
+  MessageSquare,
+  Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +47,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 const PractitionersPage = () => {
   const [practitioners, setPractitioners] = useState([]);
@@ -304,7 +323,10 @@ const PractitionersPage = () => {
         <Dialog open={!!selectedPractitioner} onOpenChange={() => setSelectedPractitioner(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-surface border-border">
             {selectedPractitioner && (
-              <PractitionerDetail practitioner={selectedPractitioner} />
+              <PractitionerDetailEnhanced 
+                practitioner={selectedPractitioner} 
+                onClose={() => setSelectedPractitioner(null)}
+              />
             )}
           </DialogContent>
         </Dialog>
@@ -511,6 +533,436 @@ const PractitionerDetail = ({ practitioner }) => {
           )}
         </div>
       </div>
+    </>
+  );
+};
+
+// Enhanced Practitioner Detail with Booking & Reviews
+const PractitionerDetailEnhanced = ({ practitioner, onClose }) => {
+  const [activeTab, setActiveTab] = useState("info");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [bookingReason, setBookingReason] = useState("");
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+  useEffect(() => {
+    loadReviews();
+    checkIfFavorited();
+  }, [practitioner.practitioner_id]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      loadSlots();
+    }
+  }, [selectedDate]);
+
+  const loadSlots = async () => {
+    try {
+      setLoadingSlots(true);
+      const dateStr = format(selectedDate, "yyyy-MM-dd");
+      const data = await getAvailableSlots(practitioner.practitioner_id, dateStr);
+      setAvailableSlots(data.available_slots);
+    } catch (error) {
+      console.error("Failed to load slots:", error);
+      toast.error("Failed to load available slots");
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
+  const loadReviews = async () => {
+    try {
+      setLoadingReviews(true);
+      const data = await getPractitionerReviews(practitioner.practitioner_id);
+      setReviews(data);
+    } catch (error) {
+      console.error("Failed to load reviews:", error);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const checkIfFavorited = async () => {
+    try {
+      const data = await checkFavorite("practitioner", practitioner.practitioner_id);
+      setIsFavorited(data.is_favorited);
+    } catch (error) {
+      console.error("Failed to check favorite:", error);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    try {
+      setFavoriteLoading(true);
+      if (isFavorited) {
+        await removeFavorite("practitioner", practitioner.practitioner_id);
+        toast.success("Removed from favorites");
+      } else {
+        await addFavorite("practitioner", practitioner.practitioner_id);
+        toast.success("Added to favorites");
+      }
+      setIsFavorited(!isFavorited);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to update favorites");
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
+  const handleBooking = async () => {
+    if (!selectedDate || !selectedSlot) {
+      toast.error("Please select a date and time slot");
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      await createBooking({
+        practitioner_id: practitioner.practitioner_id,
+        date: format(selectedDate, "yyyy-MM-dd"),
+        time_slot: selectedSlot,
+        reason: bookingReason || null
+      });
+      toast.success("Appointment booked successfully!");
+      setSelectedDate(null);
+      setSelectedSlot(null);
+      setBookingReason("");
+      setActiveTab("info");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to book appointment");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!newReview.comment.trim()) {
+      toast.error("Please write a review comment");
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      await createReview({
+        practitioner_id: practitioner.practitioner_id,
+        rating: newReview.rating,
+        comment: newReview.comment
+      });
+      toast.success("Review submitted successfully!");
+      setNewReview({ rating: 5, comment: "" });
+      loadReviews();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  return (
+    <>
+      <DialogHeader>
+        <div className="flex gap-4">
+          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+            <img
+              src={practitioner.image_url || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"}
+              alt={practitioner.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-start justify-between">
+              <DialogTitle className="font-serif text-xl font-semibold text-text-primary mb-1">
+                {practitioner.name}
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleFavorite}
+                disabled={favoriteLoading}
+                className={isFavorited ? "text-accent" : "text-text-secondary"}
+                data-testid="favorite-practitioner-button"
+              >
+                <Heart className={`w-5 h-5 ${isFavorited ? "fill-current" : ""}`} />
+              </Button>
+            </div>
+            <p className="text-text-secondary font-sans text-sm">{practitioner.title}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <span className="font-sans font-medium text-sm">{practitioner.rating}</span>
+              </div>
+              <span className="text-text-secondary text-xs">({practitioner.reviews_count} reviews)</span>
+              <span className="text-primary font-medium text-sm ml-auto">{practitioner.consultation_fee}</span>
+            </div>
+          </div>
+        </div>
+      </DialogHeader>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+        <TabsList className="w-full bg-surface-alt border border-border">
+          <TabsTrigger value="info" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            Info
+          </TabsTrigger>
+          <TabsTrigger value="book" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Calendar className="w-4 h-4 mr-1" />
+            Book
+          </TabsTrigger>
+          <TabsTrigger value="reviews" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <MessageSquare className="w-4 h-4 mr-1" />
+            Reviews
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Info Tab */}
+        <TabsContent value="info" className="space-y-4 mt-4">
+          {practitioner.bio && (
+            <p className="text-text-secondary font-sans text-sm leading-relaxed">
+              {practitioner.bio}
+            </p>
+          )}
+
+          <div>
+            <h4 className="font-serif font-semibold text-text-primary mb-2 flex items-center gap-2">
+              <Stethoscope className="w-4 h-4 text-primary" />
+              Specializations
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {practitioner.specializations?.map((spec, index) => (
+                <Badge key={index} variant="secondary" className="bg-primary/10 text-primary text-xs border-0">
+                  {spec}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-semibold text-text-primary mb-2 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-primary" />
+              Qualifications
+            </h4>
+            <ul className="space-y-1">
+              {practitioner.qualifications?.map((qual, index) => (
+                <li key={index} className="flex items-start gap-2 text-sm text-text-secondary font-sans">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></span>
+                  {qual}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-surface-alt rounded-xl p-3 border border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-accent" />
+                <span className="font-sans font-medium text-sm text-text-primary">Location</span>
+              </div>
+              <p className="text-xs text-text-secondary font-sans">
+                {practitioner.clinic_name}<br />
+                {practitioner.city}, {practitioner.state}
+              </p>
+            </div>
+            <div className="bg-surface-alt rounded-xl p-3 border border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-accent" />
+                <span className="font-sans font-medium text-sm text-text-primary">Available</span>
+              </div>
+              <p className="text-xs text-text-secondary font-sans">
+                {practitioner.available_days?.slice(0, 3).join(", ")}
+                {practitioner.available_days?.length > 3 && "..."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            {practitioner.phone && (
+              <a href={`tel:${practitioner.phone}`} className="btn-primary flex-1 flex items-center justify-center gap-2 text-sm py-2">
+                <Phone className="w-4 h-4" /> Call
+              </a>
+            )}
+            {practitioner.email && (
+              <a href={`mailto:${practitioner.email}`} className="btn-secondary flex-1 flex items-center justify-center gap-2 text-sm py-2">
+                <Mail className="w-4 h-4" /> Email
+              </a>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Booking Tab */}
+        <TabsContent value="book" className="mt-4">
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-serif font-semibold text-text-primary mb-2">Select Date</h4>
+              <div className="border border-border rounded-xl p-2 bg-surface-alt">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(date) => date < new Date() || date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
+                  className="mx-auto"
+                />
+              </div>
+            </div>
+
+            {selectedDate && (
+              <div className="animate-fadeIn">
+                <h4 className="font-serif font-semibold text-text-primary mb-2">
+                  Available Slots for {format(selectedDate, "MMM d, yyyy")}
+                </h4>
+                {loadingSlots ? (
+                  <div className="flex justify-center py-4">
+                    <div className="loading-spinner w-6 h-6"></div>
+                  </div>
+                ) : availableSlots.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {availableSlots.map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => setSelectedSlot(slot)}
+                        className={`p-2 text-sm rounded-lg border transition-colors ${
+                          selectedSlot === slot
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-surface border-border hover:border-primary"
+                        }`}
+                        data-testid={`slot-${slot}`}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-text-secondary font-sans text-sm py-4">
+                    No slots available for this date
+                  </p>
+                )}
+              </div>
+            )}
+
+            {selectedSlot && (
+              <div className="animate-fadeIn">
+                <h4 className="font-serif font-semibold text-text-primary mb-2">Reason for Visit (Optional)</h4>
+                <Textarea
+                  value={bookingReason}
+                  onChange={(e) => setBookingReason(e.target.value)}
+                  placeholder="Describe your symptoms or reason for consultation..."
+                  className="bg-surface-alt border-border"
+                />
+              </div>
+            )}
+
+            <Button
+              onClick={handleBooking}
+              disabled={!selectedDate || !selectedSlot || bookingLoading}
+              className="w-full btn-accent"
+              data-testid="confirm-booking-button"
+            >
+              {bookingLoading ? "Booking..." : `Book Appointment - ${practitioner.consultation_fee}`}
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* Reviews Tab */}
+        <TabsContent value="reviews" className="mt-4">
+          <div className="space-y-4">
+            {/* Write Review */}
+            <div className="bg-surface-alt rounded-xl p-4 border border-border">
+              <h4 className="font-serif font-semibold text-text-primary mb-3">Write a Review</h4>
+              <div className="flex gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setNewReview({ ...newReview, rating: star })}
+                    className="p-1"
+                  >
+                    <Star 
+                      className={`w-6 h-6 ${
+                        star <= newReview.rating 
+                          ? "text-yellow-500 fill-yellow-500" 
+                          : "text-gray-300"
+                      }`} 
+                    />
+                  </button>
+                ))}
+              </div>
+              <Textarea
+                value={newReview.comment}
+                onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                placeholder="Share your experience..."
+                className="bg-surface border-border mb-3"
+                rows={3}
+              />
+              <Button
+                onClick={handleSubmitReview}
+                disabled={submittingReview || !newReview.comment.trim()}
+                className="btn-primary"
+                data-testid="submit-review-button"
+              >
+                {submittingReview ? "Submitting..." : "Submit Review"}
+                <Send className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+
+            {/* Reviews List */}
+            <div className="space-y-3">
+              <h4 className="font-serif font-semibold text-text-primary">
+                Patient Reviews ({reviews.length})
+              </h4>
+              {loadingReviews ? (
+                <div className="flex justify-center py-4">
+                  <div className="loading-spinner w-6 h-6"></div>
+                </div>
+              ) : reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <div key={review.review_id} className="bg-surface rounded-xl p-4 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        {review.user_picture ? (
+                          <img src={review.user_picture} alt="" className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <span className="text-primary font-semibold text-sm">
+                            {review.user_name?.charAt(0) || "U"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-sans font-medium text-sm text-text-primary">
+                            {review.user_name}
+                          </span>
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-3 h-3 ${
+                                  star <= review.rating
+                                    ? "text-yellow-500 fill-yellow-500"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-text-secondary font-sans text-sm">{review.comment}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-text-secondary font-sans text-sm py-4">
+                  No reviews yet. Be the first to review!
+                </p>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </>
   );
 };

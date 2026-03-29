@@ -34,17 +34,25 @@
 - Category-based browsing
 - **Practitioner Directory API** - 8 practitioners across 8 cities
 - Practitioner search/filter by city and specialization
+- **Booking System** - create/view/cancel appointments, available time slots
+- **Reviews System** - create reviews, view practitioner reviews, auto-update ratings
+- **Favorites System** - add/remove favorites for medicines and practitioners
 - Health check endpoint
 
 ### Frontend Features
-- Beautiful login page with Google OAuth
-- Dashboard with welcome banner and category grid
+- **Beautiful Landing Page** with "Ayur Vaidya - Nature's Way of Healing" branding
+- Login page with Google OAuth
+- Dashboard with welcome banner, quick actions (Symptom Checker, Browse, Find Practitioners)
 - Symptom checker with multi-select symptoms
 - Category pages with medicine listings
-- Medicine detail pages with full information
+- Medicine detail pages with full information + favorite button
 - Search functionality
 - **Practitioner Directory** with search, city/specialization filters
-- **Practitioner detail modal** with contact info (call/email)
+- **Practitioner Booking** - calendar picker, time slots, appointment confirmation
+- **Reviews & Ratings** - write reviews, view practitioner reviews
+- **My Appointments page** - view/cancel bookings
+- **My Favorites page** - saved medicines and practitioners with tabs
+- **User menu** with Favorites, Appointments, Logout
 - Protected routes with authentication
 - Responsive design with earthy, organic theme (Cormorant Garamond + Outfit fonts)
 
@@ -62,13 +70,16 @@
 - [x] Browse medicines by category
 - [x] Symptom checker
 - [x] Medicine details page
+- [x] Landing page with branding
+- [x] Practitioner booking/appointments
+- [x] Reviews and ratings system
+- [x] Favorites for medicines and practitioners
 
 ### P1 (High Priority)
-- [ ] User favorites/bookmarks
-- [ ] Recently viewed medicines
+- [ ] Email/SMS appointment reminders
+- [ ] Appointment rescheduling
 - [ ] Print medicine information
-- [ ] Practitioner booking integration
-- [ ] Practitioner reviews system
+- [ ] Practitioner availability calendar management
 
 ### P2 (Medium Priority)
 - [ ] User notes on medicines

@@ -6,7 +6,9 @@ import {
   User, 
   Leaf,
   Menu,
-  X
+  X,
+  Heart,
+  Calendar
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -126,6 +128,19 @@ export const Header = () => {
                   <p className="text-sm font-medium text-text-primary font-sans">{user?.name}</p>
                   <p className="text-xs text-text-secondary font-sans">{user?.email}</p>
                 </div>
+                <DropdownMenuSeparator className="bg-border" />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/favorites" className="flex items-center">
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>My Favorites</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/bookings" className="flex items-center">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>My Appointments</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border" />
                 <DropdownMenuItem 
                   onClick={handleLogout}

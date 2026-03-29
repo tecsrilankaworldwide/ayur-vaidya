@@ -74,3 +74,58 @@ export const getPractitionerSpecializations = async () => {
   const response = await apiClient.get("/practitioners/specializations");
   return response.data;
 };
+
+// Bookings
+export const createBooking = async (bookingData) => {
+  const response = await apiClient.post("/bookings", bookingData);
+  return response.data;
+};
+
+export const getUserBookings = async () => {
+  const response = await apiClient.get("/bookings");
+  return response.data;
+};
+
+export const cancelBooking = async (bookingId) => {
+  const response = await apiClient.delete(`/bookings/${bookingId}`);
+  return response.data;
+};
+
+export const getAvailableSlots = async (practitionerId, date) => {
+  const response = await apiClient.get(`/practitioners/${practitionerId}/slots`, {
+    params: { date }
+  });
+  return response.data;
+};
+
+// Reviews
+export const createReview = async (reviewData) => {
+  const response = await apiClient.post("/reviews", reviewData);
+  return response.data;
+};
+
+export const getPractitionerReviews = async (practitionerId) => {
+  const response = await apiClient.get(`/practitioners/${practitionerId}/reviews`);
+  return response.data;
+};
+
+// Favorites
+export const addFavorite = async (itemType, itemId) => {
+  const response = await apiClient.post("/favorites", { item_type: itemType, item_id: itemId });
+  return response.data;
+};
+
+export const removeFavorite = async (itemType, itemId) => {
+  const response = await apiClient.delete(`/favorites/${itemType}/${itemId}`);
+  return response.data;
+};
+
+export const getFavorites = async () => {
+  const response = await apiClient.get("/favorites");
+  return response.data;
+};
+
+export const checkFavorite = async (itemType, itemId) => {
+  const response = await apiClient.get(`/favorites/check/${itemType}/${itemId}`);
+  return response.data;
+};
