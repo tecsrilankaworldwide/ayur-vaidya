@@ -123,8 +123,8 @@ const PractitionersPage = () => {
         {/* Hero Section */}
         <div className="relative rounded-2xl overflow-hidden mb-8 animate-fadeIn">
           <img
-            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d"
-            alt="Ayurvedic consultation"
+            src="https://images.unsplash.com/photo-1622042914579-f5d10cf8ea4d?crop=entropy&cs=srgb&fm=jpg&q=85"
+            alt="Ayurvedic herbs in mortar and pestle"
             className="w-full h-48 sm:h-64 object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-text-primary/90 via-text-primary/70 to-transparent" />

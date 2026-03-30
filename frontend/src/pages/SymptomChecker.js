@@ -167,8 +167,8 @@ const SymptomChecker = () => {
           {/* Right - Image */}
           <div className="hidden lg:block animate-fadeIn delay-200">
             <img
-              src="https://images.pexels.com/photos/6978215/pexels-photo-6978215.jpeg"
-              alt="Herbal ingredients"
+              src="https://images.unsplash.com/photo-1684713745382-4d18b6be39a9?crop=entropy&cs=srgb&fm=jpg&q=85"
+              alt="Traditional Ayurvedic spices and herbs"
               className="w-full h-80 object-cover rounded-2xl"
             />
           </div>

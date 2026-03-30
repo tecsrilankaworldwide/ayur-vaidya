@@ -45,11 +45,11 @@ const LandingPage = () => {
     <div className="min-h-screen bg-background overflow-hidden" data-testid="landing-page">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center">
-        {/* Background Image */}
+        {/* Background Image - Traditional Ayurvedic Herbs & Spices */}
         <div className="absolute inset-0">
           <img
-            src="https://images.pexels.com/photos/3735747/pexels-photo-3735747.jpeg"
-            alt="Ayurvedic herbs and healing"
+            src="https://images.unsplash.com/photo-1677599082447-6549af4c5454?crop=entropy&cs=srgb&fm=jpg&q=85"
+            alt="Traditional Ayurvedic herbs and spices in wooden bowls"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1A2421]/95 via-[#1A2421]/80 to-[#1A2421]/40" />

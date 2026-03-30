@@ -68,8 +68,8 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="relative rounded-2xl overflow-hidden mb-10 animate-fadeIn">
           <img
-            src="https://images.pexels.com/photos/7615621/pexels-photo-7615621.jpeg"
-            alt="Herbal supplements"
+            src="https://images.unsplash.com/photo-1589536677029-c0aa1808fba6?crop=entropy&cs=srgb&fm=jpg&q=85"
+            alt="Traditional Ayurvedic spices and herbs"
             className="w-full h-48 sm:h-56 object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-text-primary/90 via-text-primary/70 to-transparent" />
