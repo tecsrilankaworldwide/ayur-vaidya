@@ -22,17 +22,17 @@
 - **Database**: MongoDB
 - **Authentication**: Emergent Google OAuth
 
-## What's Been Implemented (March 29, 2026)
+## What's Been Implemented
 
 ### Backend Features
 - Google OAuth integration with Emergent Auth
-- 7 Illness categories (Respiratory, Digestive, Fever, Headache, Skin, Stress, Allergies)
-- 21 Ayurvedic medicines with comprehensive info
-- Symptom checker API (71 unique symptoms)
+- 20 Illness categories (Respiratory, Digestive, Fever, Headache, Skin, Stress, Allergies, Diabetes, Joints, General, Hair, Eyes, Heart, Liver/Kidney, Women's, Men's, Children's, Weight, BP, Cholesterol)
+- 76 Ayurvedic medicines with comprehensive info
+- Symptom checker API
 - Search functionality
 - Medicine detail API
 - Category-based browsing
-- **Practitioner Directory API** - 8 practitioners across 8 cities
+- **Practitioner Directory API** - 16 practitioners across 16 cities (India + Sri Lanka)
 - Practitioner search/filter by city and specialization
 - **Booking System** - create/view/cancel appointments, available time slots
 - **Reviews System** - create reviews, view practitioner reviews, auto-update ratings
@@ -41,8 +41,17 @@
 
 ### Frontend Features
 - **Beautiful Landing Page** with "Ayur Vaidya - Nature's Way of Healing" branding
+  - Hero with improved contrast (dark overlay, terracotta accent color)
+  - "How It Works" 3-step process section
+  - Three Doshas (Tridosha) section
+  - 20 Health Categories grid
+  - Puskola Potha (ancient heritage) section
+  - Sacred Elements (Pahana, Tulsi, Kumbha) section
+  - Practitioner Locations (India & Sri Lanka) section
+  - Trust/Safety indicators
+  - CTA section
 - Login page with Google OAuth
-- Dashboard with welcome banner, quick actions (Symptom Checker, Browse, Find Practitioners)
+- Dashboard with welcome banner, quick actions
 - Symptom checker with multi-select symptoms
 - Category pages with medicine listings
 - Medicine detail pages with full information + favorite button
@@ -56,24 +65,32 @@
 - Protected routes with authentication
 - Responsive design with earthy, organic theme (Cormorant Garamond + Outfit fonts)
 
+### Practitioner Coverage
+**India (12 cities):** New Delhi, Mumbai, Bangalore, Chennai, Hyderabad, Jaipur, Varanasi, Pune, Ahmedabad, Kolkata, Lucknow, Kerala (Thiruvananthapuram)
+**Sri Lanka (4 cities):** Colombo, Kandy, Galle, Jaffna
+
 ### Design System
 - Theme: Organic & Earthy (Light)
 - Primary Color: #2C4C3B (Moss Green)
 - Accent Color: #E07A5F (Terracotta)
 - Background: #F9F6F0 (Warm Sand)
+- Dark sections: #1A2421, #0D1B16
 - Typography: Cormorant Garamond (headings), Outfit (body)
 
 ## Prioritized Backlog
 
-### P0 (Critical) - DONE
+### P0 (Critical) - ALL DONE
 - [x] Google OAuth authentication
-- [x] Browse medicines by category
+- [x] Browse medicines by category (20 categories)
 - [x] Symptom checker
 - [x] Medicine details page
-- [x] Landing page with branding
+- [x] Landing page with branding and improved contrast
 - [x] Practitioner booking/appointments
 - [x] Reviews and ratings system
 - [x] Favorites for medicines and practitioners
+- [x] Expanded medicine database (76 medicines)
+- [x] Expanded practitioner network (16 practitioners, India + Sri Lanka)
+- [x] Landing page new sections (How It Works, Categories, Locations, Trust)
 
 ### P1 (High Priority)
 - [ ] Email/SMS appointment reminders
@@ -82,6 +99,7 @@
 - [ ] Practitioner availability calendar management
 
 ### P2 (Medium Priority)
+- [ ] Refactor seed data out of server.py into separate file
 - [ ] User notes on medicines
 - [ ] Dosage calculator based on age/weight
 - [ ] Medicine comparison feature
@@ -89,12 +107,11 @@
 
 ### P3 (Low Priority)
 - [ ] Dark mode theme
-- [ ] Multi-language support (Sanskrit, Hindi)
+- [ ] Multi-language support (Sanskrit, Hindi, Tamil, Sinhala)
 - [ ] Community reviews/experiences
-- [ ] Practitioner directory
+- [ ] PWA for offline access
 
 ## Next Tasks
-1. Add user favorites feature
-2. Implement recently viewed medicines
-3. Add print functionality for medicine details
-4. Consider PWA for offline access
+1. Refactor seed data from server.py to separate seed_data.py file
+2. Add print functionality for medicine details
+3. Consider PWA for offline access
