@@ -209,6 +209,60 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Ancient Heritage Section - Puskola Potha */}
+      <section className="py-24 px-6 bg-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Image */}
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img
+                  src="https://images.unsplash.com/photo-1676115388797-5f448ad78e44?crop=entropy&cs=srgb&fm=jpg&q=85"
+                  alt="Ancient palm leaf manuscript (Puskola Potha)"
+                  className="w-full h-80 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent rounded-full flex items-center justify-center shadow-lg">
+                <span className="font-serif text-white text-center text-xs leading-tight px-2">
+                  5000+<br />Years
+                </span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-primary mb-3 block">
+                Ancient Heritage
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-text-primary mb-6 leading-tight">
+                Wisdom Preserved in<br />
+                <span className="text-primary">Puskola Potha</span>
+              </h2>
+              <p className="text-text-secondary font-sans leading-relaxed mb-6">
+                For millennia, Ayurvedic medicinal knowledge has been carefully inscribed on 
+                <strong> Puskola Potha</strong> (boiled palmyra leaves). These ancient palm leaf manuscripts 
+                contain the wisdom of generations of healers, preserving remedies and treatments 
+                that continue to benefit humanity today.
+              </p>
+              <p className="text-text-secondary font-sans leading-relaxed mb-6">
+                Our database draws from these time-tested traditions, bringing you authentic 
+                Ayurvedic knowledge in a modern, accessible format.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Leaf className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-serif text-lg font-semibold text-text-primary">Traditional Authenticity</p>
+                  <p className="text-sm text-text-secondary font-sans">Rooted in ancient Vedic scriptures</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonial Section */}
       <section className="py-24 px-6 bg-surface-alt">
         <div className="max-w-4xl mx-auto text-center">
