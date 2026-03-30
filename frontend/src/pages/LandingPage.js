@@ -213,15 +213,14 @@ const LandingPage = () => {
       <section className="py-24 px-6 bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Image - Using user's Puskola Potha */}
             <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl bg-surface-alt p-8">
                 <img
-                  src="https://images.unsplash.com/photo-1676115388797-5f448ad78e44?crop=entropy&cs=srgb&fm=jpg&q=85"
-                  alt="Ancient palm leaf manuscript (Puskola Potha)"
-                  className="w-full h-80 object-cover"
+                  src="https://customer-assets.emergentagent.com/job_wellness-vaid/artifacts/juudcf3h_image.png"
+                  alt="Puskola Potha - Ancient palm leaf manuscript"
+                  className="w-full h-72 object-contain"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent rounded-full flex items-center justify-center shadow-lg">
                 <span className="font-serif text-white text-center text-xs leading-tight px-2">
@@ -258,6 +257,79 @@ const LandingPage = () => {
                   <p className="text-sm text-text-secondary font-sans">Rooted in ancient Vedic scriptures</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Traditional Elements Section - Oil Lamps & Tulsi */}
+      <section className="py-20 px-6 bg-surface">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-primary mb-3 block">
+              Sacred Elements
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-text-primary">
+              The Pillars of Ayurvedic Healing
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Oil Lamp - Pahana */}
+            <div className="group text-center">
+              <div className="relative rounded-2xl overflow-hidden mb-6 shadow-lg">
+                <img
+                  src="https://images.pexels.com/photos/8818748/pexels-photo-8818748.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+                  alt="Traditional oil lamp (Pahana)"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-left">
+                  <h3 className="font-serif text-xl font-semibold text-white">Pahana</h3>
+                  <p className="text-white/80 text-sm font-sans">Sacred Oil Lamp</p>
+                </div>
+              </div>
+              <p className="text-text-secondary font-sans text-sm px-4">
+                The sacred oil lamp symbolizes the light of knowledge, dispelling darkness and ignorance in healing practices.
+              </p>
+            </div>
+
+            {/* Tulsi */}
+            <div className="group text-center">
+              <div className="relative rounded-2xl overflow-hidden mb-6 shadow-lg">
+                <img
+                  src="https://images.pexels.com/photos/32112349/pexels-photo-32112349.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+                  alt="Sacred Tulsi (Holy Basil) plant"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-left">
+                  <h3 className="font-serif text-xl font-semibold text-white">Tulsi</h3>
+                  <p className="text-white/80 text-sm font-sans">Holy Basil</p>
+                </div>
+              </div>
+              <p className="text-text-secondary font-sans text-sm px-4">
+                Known as the "Queen of Herbs," Tulsi is revered for its healing properties and spiritual significance.
+              </p>
+            </div>
+
+            {/* Brass Vessels */}
+            <div className="group text-center">
+              <div className="relative rounded-2xl overflow-hidden mb-6 shadow-lg">
+                <img
+                  src="https://images.unsplash.com/photo-1644341129459-aa473f26d313?crop=entropy&cs=srgb&fm=jpg&q=85"
+                  alt="Traditional brass vessels for medicine preparation"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-left">
+                  <h3 className="font-serif text-xl font-semibold text-white">Kumbha</h3>
+                  <p className="text-white/80 text-sm font-sans">Brass Vessels</p>
+                </div>
+              </div>
+              <p className="text-text-secondary font-sans text-sm px-4">
+                Traditional brass vessels enhance medicinal properties and are used in preparation of Ayurvedic remedies.
+              </p>
             </div>
           </div>
         </div>
