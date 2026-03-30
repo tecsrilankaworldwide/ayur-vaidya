@@ -7,7 +7,10 @@ import {
   Sparkles, 
   Heart, 
   Flower2,
-  ChevronRight 
+  ChevronRight,
+  Activity,
+  Bone,
+  Shield
 } from "lucide-react";
 
 const iconMap = {
@@ -18,6 +21,9 @@ const iconMap = {
   Sparkles,
   Heart,
   Flower2,
+  Activity,
+  Bone,
+  Shield
 };
 
 export const CategoryCard = ({ category }) => {
