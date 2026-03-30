@@ -209,6 +209,139 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Tridosha Section - Vata, Pitta, Kapha */}
+      <section className="py-24 px-6 bg-surface">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-primary mb-3 block">
+              The Foundation of Ayurveda
+            </span>
+            <h2 className="font-serif text-4xl sm:text-5xl font-semibold text-text-primary mb-4">
+              The Three Doshas
+            </h2>
+            <p className="text-text-secondary font-sans max-w-2xl mx-auto">
+              According to Ayurveda, the universe is composed of five elements, which combine to form three fundamental energies or doshas that govern all physical and mental processes.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Vata */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-sky-50 to-blue-100 rounded-3xl p-8 border border-sky-200 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div className="w-20 h-20 rounded-full bg-sky-500/20 flex items-center justify-center mb-6 mx-auto">
+                  <svg className="w-10 h-10 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" strokeLinecap="round"/>
+                    <path d="M8 12c0-2.21 1.79-4 4-4M16 12c0 2.21-1.79 4-4 4" strokeLinecap="round"/>
+                    <path d="M12 8v8M8 12h8" strokeLinecap="round" opacity="0.5"/>
+                  </svg>
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-sky-800 text-center mb-2">
+                  Vata
+                </h3>
+                <p className="text-sky-600 text-sm font-sans text-center mb-4">
+                  Air + Space
+                </p>
+                <p className="text-sky-700/80 font-sans text-sm text-center mb-4">
+                  Controls movement, breathing, circulation, and nervous system functions.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-sans text-sky-700">
+                    <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                    <span>Qualities: Light, dry, cold, mobile</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-sky-700">
+                    <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                    <span>Season: Autumn & Early Winter</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-sky-700">
+                    <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                    <span>Time: 2-6 AM & 2-6 PM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pitta */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-orange-50 to-red-100 rounded-3xl p-8 border border-orange-200 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div className="w-20 h-20 rounded-full bg-orange-500/20 flex items-center justify-center mb-6 mx-auto">
+                  <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2c1.5 2 3 4 3 7 0 3.5-2.5 6-6 6s-6-2.5-6-6c0-3 1.5-5 3-7" strokeLinecap="round"/>
+                    <path d="M12 22v-4M8 18l4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="11" r="2" fill="currentColor" opacity="0.5"/>
+                  </svg>
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-orange-800 text-center mb-2">
+                  Pitta
+                </h3>
+                <p className="text-orange-600 text-sm font-sans text-center mb-4">
+                  Fire + Water
+                </p>
+                <p className="text-orange-700/80 font-sans text-sm text-center mb-4">
+                  Governs digestion, metabolism, intelligence, and body temperature.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-sans text-orange-700">
+                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                    <span>Qualities: Hot, sharp, oily, intense</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-orange-700">
+                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                    <span>Season: Summer</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-orange-700">
+                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                    <span>Time: 10-2 AM & 10-2 PM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Kapha */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-3xl p-8 border border-emerald-200 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6 mx-auto">
+                  <svg className="w-10 h-10 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2C8 2 4 6 4 10c0 6 8 12 8 12s8-6 8-12c0-4-4-8-8-8z" strokeLinecap="round"/>
+                    <circle cx="12" cy="10" r="3" fill="currentColor" opacity="0.3"/>
+                  </svg>
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-emerald-800 text-center mb-2">
+                  Kapha
+                </h3>
+                <p className="text-emerald-600 text-sm font-sans text-center mb-4">
+                  Earth + Water
+                </p>
+                <p className="text-emerald-700/80 font-sans text-sm text-center mb-4">
+                  Maintains structure, stability, lubrication, and immune system.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-sans text-emerald-700">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Qualities: Heavy, slow, cool, stable</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-emerald-700">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Season: Late Winter & Spring</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-sans text-emerald-700">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Time: 6-10 AM & 6-10 PM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-text-secondary font-sans text-sm max-w-2xl mx-auto">
+              Balance of these three doshas leads to health, while imbalance leads to disease. 
+              Ayurvedic treatments aim to restore this natural balance through diet, lifestyle, and herbal remedies.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Ancient Heritage Section - Puskola Potha */}
       <section className="py-24 px-6 bg-background">
         <div className="max-w-7xl mx-auto">
